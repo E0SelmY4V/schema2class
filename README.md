@@ -35,7 +35,7 @@ For example, if you have a JSON schema like this:
 }
 ```
 
-You can create the class for this schema.
+You can create the class for this schema, just like:
 
 ```javascript
 const shcema = require('./schema.json');
