@@ -32,7 +32,7 @@ const THR = {
 let checkKey = false;
 let checkType = false;
 const exp_map = {
-	...toMap(TYPE_BASE, (def) => n => n || def),
+	...toMap(TYPE_BASE, (def) => (n = def) => n),
 	object(def, props) {
 		const clss = {};
 		function ParsedObj(n) {
