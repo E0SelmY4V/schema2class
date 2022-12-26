@@ -74,7 +74,7 @@ function exp(sc) {
 		};
 	}
 }
-Object.defineProperties(module.exports = exp, {
+Object.defineProperties(typeof module === 'undefined' ? window.schema2class = exp: module.exports = exp, {
 	check: { get: () => checkKey && checkType, set: (n) => checkKey = checkType = n },
 	checkKey: { get: () => checkKey, set: (n) => checkKey = n },
 	checkType: { get: () => checkType, set: (n) => checkType = n },

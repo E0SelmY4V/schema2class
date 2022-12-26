@@ -2,6 +2,29 @@
 
 Parse JSON schema to class, and you can 'new' your data easily.
 
+## Import
+
+- ESM
+
+  ```javascript
+  import schema2class from 'schema2class';
+  ```
+
+- CommonJS
+
+  ```javascript
+  const schema2class = require('schema2class');
+  ```
+
+- Broswer
+
+  ```html
+  <script src="schema2class/index.js"></script>
+  <script>
+    window.schema2class();
+  </script>
+  ```
+
 ## Usage
 
 For example, if you have a JSON schema like this:
