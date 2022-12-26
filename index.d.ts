@@ -1,6 +1,6 @@
 /**
  * JSON Schema Parser
- * @version 2.1.0
+ * @version 2.3.0
  * @link https://github.com/E0SelmY4V/schema2class
  */
 declare function _exports(schema: any): (n?: any) => any;

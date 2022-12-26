@@ -1,3 +1,8 @@
+/**
+ * JSON Schema Parser
+ * @version 2.3.0
+ * @link https://github.com/E0SelmY4V/schema2class
+ */
 "use strict";
 (function () {
 	function toMap(arr, f) {
