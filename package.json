@@ -24,5 +24,8 @@
 	"bugs": {
 		"url": "https://github.com/E0SelmY4V/schema2class/issues"
 	},
+	"devDependencies": {
+		"ie-passer": "^1.3.4"
+	},
 	"homepage": "https://github.com/E0SelmY4V/schema2class#readme"
 }

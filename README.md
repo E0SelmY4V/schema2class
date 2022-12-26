@@ -2,6 +2,8 @@
 
 Parse JSON schema to class, and you can 'new' your data easily.
 
+This is also an ES3 edition for IE Browser.
+
 ## Import
 
 - ESM
@@ -14,12 +16,16 @@ Parse JSON schema to class, and you can 'new' your data easily.
 
   ```javascript
   const schema2class = require('schema2class');
+  // or
+  var schema2class = require('schema2class/es3');
   ```
 
 - Broswer
 
   ```html
-  <script src="schema2class/index.js"></script>
+  <!--[if IE]><script src="schema2class/es3.js"><![endif]-->
+    <script src="schema2class/index.js"></script>
+  <!--[if IE]></script><![endif]-->
   <script>
     window.schema2class();
   </script>
