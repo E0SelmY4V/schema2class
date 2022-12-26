@@ -36,6 +36,7 @@
 	};
 	let checkKey = false;
 	let checkType = false;
+	let realArray = false;
 	const exp_map = {
 		...toMap(TYPE_BASE, (def) => (n = def) => n),
 		object(def, props) {
@@ -49,14 +50,18 @@
 		},
 		array(def, _, items) {
 			const eCls = exp(items);
-			function ParsedArr(n) {
+			const ParsedArr = realArray ? function ParsedArr(n) {
 				return Object.setPrototypeOf(
 					typeof n === 'object' && isFinite(n.length)
 						? n.map(eCls)
 						: ((n = []).length = ParsedArr.prototype.length, n),
 					ParsedArr.prototype,
 				);
-			}
+			} : function ParsedArr(n) {
+				typeof n === 'object' && isFinite(n.length)
+					? (this.length = 0, n.forEach(e => this.push(eCls(e))))
+					: this.length = ParsedArr.prototype.length;
+			};
 			ParsedArr.prototype = [], ParsedArr.prototype.constructor = ParsedArr;
 			typeof def === 'object' && isFinite(def.length) && def.forEach(e => ParsedArr.prototype.push(eCls(e)));
 			return n => new ParsedArr(n);
@@ -83,5 +88,6 @@
 		check: { get: () => checkKey && checkType, set: (n) => checkKey = checkType = n },
 		checkKey: { get: () => checkKey, set: (n) => checkKey = n },
 		checkType: { get: () => checkType, set: (n) => checkType = n },
+		realArray: { get: () => realArray, set: (n) => realArray = n },
 	});
 })();

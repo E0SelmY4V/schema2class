@@ -9,4 +9,5 @@ declare namespace _exports {
 	let check: boolean;
 	let checkKey: boolean;
 	let checkType: boolean;
+	let realArray: boolean;
 }

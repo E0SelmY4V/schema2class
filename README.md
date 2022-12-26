@@ -81,15 +81,19 @@ const shcema = require('./schema.json');
 const s2c = require('schema2class');
 const log = console.log;
 
-const schemaFactory = s2c(shcema);
-
-const data0 = schemaFactory();
+s2c.realArray = true;
+const schemaFactory0 = s2c(shcema);
+const data0 = schemaFactory0();
 log(data0); // ParsedObj {}
 log(data0.a); // 100
 log(data0.b); // ParsedArr(1) [ <1 empty items> ]
 log(data0.b[0].str); // def
+log(data0.b instanceof Array); // true
+log(Array.isArray(data0.b)); // true
 
-const data1 = schemaFactory({
+s2c.realArray = false; // Good for performance
+const schemaFactory1 = s2c(shcema);
+const data1 = schemaFactory1({
   b: [
     { str: "jkl" },
     {},
@@ -100,7 +104,9 @@ const data1 = schemaFactory({
 log(data1.b[0]); // ParsedObj { str: 'jkl' }
 log(data1.b[1].str); // abc
 log(data1.b[2][0]); // hig
-log(data1.b[3]); // ParsedArr(1) [ 'klm' ]
+log(data1.b[3]); // ParsedArr { '0': 'klm', length: 1 }
+log(data1.b instanceof Array); // true
+log(Array.isArray(data1.b)); // false
 ```
 
 You can also check the correctness of the data through the factory.
