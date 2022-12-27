@@ -17,6 +17,10 @@
 		"number",
 		"string"
 	];
+	var TYPE = [
+		'array',
+		'object',
+	].concat(TYPE_BASE);
 	var getType_map = {
 		bigint: 'number',
 		number: 'number',
@@ -45,17 +49,19 @@
 	var exp_map = toMap(TYPE_BASE, function (def) {
 		return function (n) { return typeof n === 'undefined' ? def : n; };
 	});
-	exp_map.object = function (def, props) {
+	exp_map.object = function (def, o, props) {
 		var clss = {};
-		function ParsedObj(n) {
-			if (n) for (var i in n) i in clss ? this[i] = clss[i](n[i]) : exp.check || exp.checkKey ? THR.notKey(i, clss) : this[i] = n[i];
+		var ParsedObj = o.check || o.checkKey ? function ParsedObj(n) {
+			if (n) for (const i in n) i in clss ? this[i] = clss[i](n[i]) : THR.notKey(i, clss);
+		} : function ParsedObj(n) {
+			if (n) for (const i in n) i in clss ? this[i] = clss[i](n[i]) : this[i] = n[i];
 		}
-		if (props) for (var i in props) ParsedObj.prototype[i] = (clss[i] = exp(props[i]))();
+		if (props) for (var i in props) ParsedObj.prototype[i] = (clss[i] = parse(props[i], o))();
 		typeof def === 'object' && !isFinite(def.length) && (ParsedObj.prototype = new ParsedObj(def));
 		return function (n) { return new ParsedObj(n); };
 	};
-	exp_map.array = function (def, _, items) {
-		var eCls = exp(items);
+	exp_map.array = function (def, o, _, items) {
+		var eCls = parse(items, o);
 		function ParsedArr(n) {
 			if (typeof n === 'object' && isFinite(n.length)) {
 				this.length = 0;
@@ -66,26 +72,38 @@
 		if (typeof def === 'object' && isFinite(def.length)) for (var i = 0; i < def.length; ++i) ParsedArr.prototype.push(eCls(def[i]));
 		return function (n) { return new ParsedArr(n); };
 	};
-	function exp(sc) {
+	function parse(sc, o) {
 		var types = sc.type || 'object';
 		if (typeof types === 'string') {
-			var cls = exp_map[types](sc['default'], sc.properties, sc.items);
-			return function (n) {
-				return typeof n === 'undefined' ? cls() : getType(n) === types ? cls(n) : exp.check || exp.checkType ? THR.notType(getType(n), [types]) : n;
-			};
+			var cls = exp_map[types](sc['default'], o, sc.properties, sc.items);
+			return o.check || o.checkType
+				? function (n) { return typeof n === 'undefined' ? cls() : getType(n) === types ? cls(n) : THR.notType(getType(n), [types]); }
+				: function (n) { return typeof n === 'undefined' ? cls() : getType(n) === types ? cls(n) : n; };
 		} else {
-			var clss = {};
-			for (var i = types.length - 1; i >= 0; --i) clss[types[i]] = exp_map[types[i]](sc['default'], sc.properties, sc.items);
-			return function (n) {
+			var clss = { a: () => void 0 }, det = types[0] || 'a';
+			for (var i = types.length - 1; i >= 0; --i) clss[types[i]] = exp_map[types[i]](sc['default'], o, sc.properties, sc.items);
+			return o.check || o.checkType ? function (n) {
 				if (typeof n !== 'undefined') {
 					var nType = getType(n);
-					return nType in clss ? clss[nType](n) : exp.check || exp.checkType ? THR.notType(nType, types) : n;
-				} else return clss[types[0]]();
+					return nType in clss ? clss[nType](n) : THR.notType(nType, types);
+				} else return clss[det]();
+			} : function (n) {
+				if (typeof n !== 'undefined') {
+					var nType = getType(n);
+					return nType in clss ? clss[nType](n) : n;
+				} else return clss[det]();
 			};
 		}
+	}
+	function exp(schema, option) {
+		return parse(schema, new Option(option));
 	}
 	exp.check = false;
 	exp.checkKey = false;
 	exp.checkType = false;
+	function Option(n) {
+		for (const i in n) this[i] = n[i];
+	}
+	Option.prototype = exp;
 	typeof module === 'undefined' ? window.schema2class = exp : module.exports = exp;
 })();

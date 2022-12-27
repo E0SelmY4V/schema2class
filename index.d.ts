@@ -3,11 +3,12 @@
  * @version 2.4.0
  * @link https://github.com/E0SelmY4V/schema2class
  */
-declare function _exports(schema: any): (n?: any) => any;
+declare const _exports: {
+	(schema: any, option?: ParseOption): (n?: any) => any;
+	realArray: boolean;
+	check: boolean;
+	checkKey: boolean;
+	checkType: boolean;
+};
 export = _exports;
-declare namespace _exports {
-	let check: boolean;
-	let checkKey: boolean;
-	let checkType: boolean;
-	let realArray: boolean;
-}
+type ParseOption = Partial<typeof _exports>

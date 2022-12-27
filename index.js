@@ -13,6 +13,11 @@
 		"number",
 		"string",
 	];
+	const TYPE = [
+		'array',
+		'object',
+		...TYPE_BASE,
+	];
 	const getType_map = {
 		bigint: 'number',
 		number: 'number',
@@ -34,23 +39,22 @@
 			throw TypeError(message);
 		},
 	};
-	let checkKey = false;
-	let checkType = false;
-	let realArray = false;
 	const exp_map = {
 		...toMap(TYPE_BASE, (def) => (n = def) => n),
-		object(def, props) {
+		object(def, o, props) {
 			const clss = {};
-			function ParsedObj(n) {
-				for (const i in n) i in clss ? this[i] = clss[i](n[i]) : checkKey ? THR.notKey(i, clss) : this[i] = n[i];
+			const ParsedObj = o.check || o.checkKey ? function ParsedObj(n) {
+				for (const i in n) i in clss ? this[i] = clss[i](n[i]) : THR.notKey(i, clss);
+			} : function ParsedObj(n) {
+				for (const i in n) i in clss ? this[i] = clss[i](n[i]) : this[i] = n[i];
 			}
-			for (const i in props) ParsedObj.prototype[i] = (clss[i] = exp(props[i]))();
+			for (const i in props) ParsedObj.prototype[i] = (clss[i] = parse(props[i], o))();
 			typeof def === 'object' && !isFinite(def.length) && (ParsedObj.prototype = new ParsedObj(def));
 			return n => new ParsedObj(n);
 		},
-		array(def, _, items) {
-			const eCls = exp(items);
-			const ParsedArr = realArray ? function ParsedArr(n) {
+		array(def, o, _, items) {
+			const eCls = parse(items, o);
+			const ParsedArr = o.realArray ? function ParsedArr(n) {
 				return Object.setPrototypeOf(
 					typeof n === 'object' && isFinite(n.length)
 						? n.map(eCls)
@@ -67,27 +71,38 @@
 			return n => new ParsedArr(n);
 		},
 	};
-	function exp(sc) {
+	function parse(sc, o) {
 		const types = sc.type || 'object';
 		if (typeof types === 'string') {
-			const cls = exp_map[types](sc.default, sc.properties, sc.items);
-			return (n) => typeof n === 'undefined' ? cls()
-				: getType(n) === types ? cls(n) : checkType ? THR.notType(getType(n), [types]) : n;
+			const cls = exp_map[types](sc.default, o, sc.properties, sc.items);
+			return o.check || o.checkType
+				? (n) => typeof n === 'undefined' ? cls() : getType(n) === types ? cls(n) : THR.notType(getType(n), [types])
+				: (n) => typeof n === 'undefined' ? cls() : getType(n) === types ? cls(n) : n;
 		} else {
-			const clss = {};
-			types.forEach(e => clss[e] = exp_map[e](sc.default, sc.properties, sc.items));
-			return (n) => {
+			const clss = { a: () => void 0 }, det = types[0] || 'a';
+			types.forEach(e => clss[e] = exp_map[e](sc.default, o, sc.properties, sc.items));
+			return o.check || o.checkType ? (n) => {
 				if (typeof n !== 'undefined') {
 					const nType = getType(n);
-					return nType in clss ? clss[nType](n) : checkType ? THR.notType(nType, types) : n;
-				} else return clss[types[0]]();
+					return nType in clss ? clss[nType](n) : THR.notType(nType, types);
+				} else return clss[det]();
+			} : (n) => {
+				if (typeof n !== 'undefined') {
+					const nType = getType(n);
+					return nType in clss ? clss[nType](n) : n;
+				} else return clss[det]();
 			};
 		}
 	}
-	Object.defineProperties(typeof module === 'undefined' ? window.schema2class = exp : module.exports = exp, {
-		check: { get: () => checkKey && checkType, set: (n) => checkKey = checkType = n },
-		checkKey: { get: () => checkKey, set: (n) => checkKey = n },
-		checkType: { get: () => checkType, set: (n) => checkType = n },
-		realArray: { get: () => realArray, set: (n) => realArray = n },
+	const exp = Object.assign((schema, option) => parse(schema, new Option(option)), {
+		check: false,
+		checkKey: false,
+		checkType: false,
+		realArray: false,
 	});
+	function Option(n) {
+		Object.assign(this, n);
+	}
+	Option.prototype = exp;
+	typeof module === 'undefined' ? window.schema2class = exp : module.exports = exp;
 })();
