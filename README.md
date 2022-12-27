@@ -81,8 +81,9 @@ const shcema = require('./schema.json');
 const s2c = require('schema2class');
 const log = console.log;
 
-s2c.realArray = true;
-const schemaFactory0 = s2c(shcema);
+const schemaFactory0 = s2c(shcema, {
+  realArray: true, // Bad performance, but '[]'
+});
 const data0 = schemaFactory0();
 log(data0); // ParsedObj {}
 log(data0.a); // 100
@@ -91,7 +92,6 @@ log(data0.b[0].str); // def
 log(data0.b instanceof Array); // true
 log(Array.isArray(data0.b)); // true
 
-s2c.realArray = false; // Good for performance
 const schemaFactory1 = s2c(shcema);
 const data1 = schemaFactory1({
   b: [
@@ -115,8 +115,9 @@ You can also check the correctness of the data through the factory.
 const shcema = require('./schema.json');
 const s2c = require('schema2class');
 
-const schemaFactory = s2c(shcema);
-s2c.check = true;
+const schemaFactory = s2c(shcema, {
+  check: true, // Check all the error types
+});
 
 schemaFactory({ c: 123 });
 // ReferenceError: 'c' is not a key of { a; b; }
