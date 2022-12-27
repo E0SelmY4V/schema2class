@@ -52,9 +52,9 @@
 	exp_map.object = function (def, o, props) {
 		var clss = {};
 		var ParsedObj = o.check || o.checkKey ? function ParsedObj(n) {
-			if (n) for (const i in n) i in clss ? this[i] = clss[i](n[i]) : THR.notKey(i, clss);
+			if (n) for (var i in n) i in clss ? this[i] = clss[i](n[i]) : THR.notKey(i, clss);
 		} : function ParsedObj(n) {
-			if (n) for (const i in n) i in clss ? this[i] = clss[i](n[i]) : this[i] = n[i];
+			if (n) for (var i in n) i in clss ? this[i] = clss[i](n[i]) : this[i] = n[i];
 		}
 		if (props) for (var i in props) ParsedObj.prototype[i] = (clss[i] = parse(props[i], o))();
 		typeof def === 'object' && !isFinite(def.length) && (ParsedObj.prototype = new ParsedObj(def));
@@ -80,7 +80,7 @@
 				? function (n) { return typeof n === 'undefined' ? cls() : getType(n) === types ? cls(n) : THR.notType(getType(n), [types]); }
 				: function (n) { return typeof n === 'undefined' ? cls() : getType(n) === types ? cls(n) : n; };
 		} else {
-			var clss = { a: () => void 0 }, det = types[0] || 'a';
+			var clss = { a: function () { } }, det = types[0] || 'a';
 			for (var i = types.length - 1; i >= 0; --i) clss[types[i]] = exp_map[types[i]](sc['default'], o, sc.properties, sc.items);
 			return o.check || o.checkType ? function (n) {
 				if (typeof n !== 'undefined') {
@@ -102,7 +102,7 @@
 	exp.checkKey = false;
 	exp.checkType = false;
 	function Option(n) {
-		for (const i in n) this[i] = n[i];
+		for (var i in n) this[i] = n[i];
 	}
 	Option.prototype = exp;
 	typeof module === 'undefined' ? window.schema2class = exp : module.exports = exp;
