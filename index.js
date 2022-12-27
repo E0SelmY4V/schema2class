@@ -1,6 +1,6 @@
 /**
  * JSON Schema Parser
- * @version 2.4.0
+ * @version 2.5.0
  * @link https://github.com/E0SelmY4V/schema2class
  */
 "use strict";
