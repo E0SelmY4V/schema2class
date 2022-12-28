@@ -17,10 +17,6 @@
 		"number",
 		"string"
 	];
-	var TYPE = [
-		'array',
-		'object',
-	].concat(TYPE_BASE);
 	var getType_map = {
 		bigint: 'number',
 		number: 'number',
@@ -61,7 +57,7 @@
 		return function (n) { return new ParsedObj(n); };
 	};
 	exp_map.array = function (def, o, _, items) {
-		var eCls = parse(items, o);
+		var eCls = parse(items || {}, o);
 		function ParsedArr(n) {
 			if (typeof n === 'object' && isFinite(n.length)) {
 				this.length = 0;
@@ -96,7 +92,7 @@
 		}
 	}
 	function exp(schema, option) {
-		return parse(schema, new Option(option));
+		return parse(schema || {}, new Option(option));
 	}
 	exp.check = false;
 	exp.checkKey = false;

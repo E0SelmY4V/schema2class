@@ -52,7 +52,7 @@
 			typeof def === 'object' && !isFinite(def.length) && (ParsedObj.prototype = new ParsedObj(def));
 			return n => new ParsedObj(n);
 		},
-		array(def, o, _, items) {
+		array(def, o, _, items = {}) {
 			const eCls = parse(items, o);
 			const ParsedArr = o.realArray ? function ParsedArr(n) {
 				return Object.setPrototypeOf(
@@ -94,7 +94,7 @@
 			};
 		}
 	}
-	const exp = Object.assign((schema, option) => parse(schema, new Option(option)), {
+	const exp = Object.assign((schema = {}, option) => parse(schema, new Option(option)), {
 		check: false,
 		checkKey: false,
 		checkType: false,

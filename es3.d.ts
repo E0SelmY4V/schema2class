@@ -4,7 +4,7 @@
  * @link https://github.com/E0SelmY4V/schema2class
  */
 declare const _exports: {
-	(schema: any, option?: ParseOption): (n?: any) => any;
+	(schema?: any, option?: ParseOption): (n?: any) => any;
 	realArray: false;
 	check: boolean;
 	checkKey: boolean;
