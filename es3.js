@@ -53,19 +53,19 @@
 			if (n) for (var i in n) i in clss ? this[i] = clss[i](n[i]) : this[i] = n[i];
 		}
 		if (props) for (var i in props) ParsedObj.prototype[i] = (clss[i] = parse(props[i], o))();
-		typeof def === 'object' && !isFinite(def.length) && (ParsedObj.prototype = new ParsedObj(def));
+		typeof def === 'object' && def && !isFinite(def.length) && (ParsedObj.prototype = new ParsedObj(def));
 		return function (n) { return new ParsedObj(n); };
 	};
 	exp_map.array = function (def, o, _, items) {
 		var eCls = parse(items || {}, o);
 		function ParsedArr(n) {
-			if (typeof n === 'object' && isFinite(n.length)) {
+			if (typeof n !== 'undefined') {
 				this.length = 0;
 				for (var i = 0; i < n.length; ++i) this.push(eCls(n[i]));
 			} else this.length = ParsedArr.prototype.length;
 		}
 		ParsedArr.prototype = [], ParsedArr.prototype.constructor = ParsedArr;
-		if (typeof def === 'object' && isFinite(def.length)) for (var i = 0; i < def.length; ++i) ParsedArr.prototype.push(eCls(def[i]));
+		if (typeof def === 'object' && def && isFinite(def.length)) for (var i = 0; i < def.length; ++i) ParsedArr.prototype.push(eCls(def[i]));
 		return function (n) { return new ParsedArr(n); };
 	};
 	function parse(sc, o) {
@@ -98,7 +98,7 @@
 	exp.checkKey = false;
 	exp.checkType = false;
 	function Option(n) {
-		for (var i in n) this[i] = n[i];
+		if (n) for (var i in n) this[i] = n[i];
 	}
 	Option.prototype = exp;
 	typeof module === 'undefined' ? window.schema2class = exp : module.exports = exp;

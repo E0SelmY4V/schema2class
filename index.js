@@ -13,11 +13,6 @@
 		"number",
 		"string",
 	];
-	const TYPE = [
-		'array',
-		'object',
-		...TYPE_BASE,
-	];
 	const getType_map = {
 		bigint: 'number',
 		number: 'number',
@@ -49,25 +44,19 @@
 				for (const i in n) i in clss ? this[i] = clss[i](n[i]) : this[i] = n[i];
 			}
 			for (const i in props) ParsedObj.prototype[i] = (clss[i] = parse(props[i], o))();
-			typeof def === 'object' && !isFinite(def.length) && (ParsedObj.prototype = new ParsedObj(def));
+			typeof def === 'object' && def && !isFinite(def.length) && (ParsedObj.prototype = new ParsedObj(def));
 			return n => new ParsedObj(n);
 		},
 		array(def, o, _, items = {}) {
 			const eCls = parse(items, o);
-			const ParsedArr = o.realArray ? function ParsedArr(n) {
-				return Object.setPrototypeOf(
-					typeof n === 'object' && isFinite(n.length)
-						? n.map(eCls)
-						: ((n = []).length = ParsedArr.prototype.length, n),
-					ParsedArr.prototype,
-				);
-			} : function ParsedArr(n) {
-				typeof n === 'object' && isFinite(n.length)
-					? (this.length = 0, n.forEach(e => this.push(eCls(e))))
-					: this.length = ParsedArr.prototype.length;
+			const ParsedArr = o.realArray ? function ParsedArr(n = []) {
+				return Object.setPrototypeOf(n.map(eCls), ParsedArr.prototype);
+			} : function ParsedArr(n = []) {
+				this.length = 0;
+				n.forEach(e => this.push(eCls(e)));
 			};
 			ParsedArr.prototype = [], ParsedArr.prototype.constructor = ParsedArr;
-			typeof def === 'object' && isFinite(def.length) && def.forEach(e => ParsedArr.prototype.push(eCls(e)));
+			def && typeof def.forEach === 'function' && def.forEach(e => ParsedArr.prototype.push(eCls(e)));
 			return n => new ParsedArr(n);
 		},
 	};
