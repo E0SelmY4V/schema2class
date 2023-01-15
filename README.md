@@ -27,7 +27,9 @@ This is also an ES3 edition for IE Browser.
     <script src="schema2class/index.js"></script>
   <!--[if IE]></script><![endif]-->
   <script>
-    window.schema2class();
+    /// <reference path="schema2class/browser.d.ts" />
+
+    console.log(schema2class);
   </script>
   ```
 
