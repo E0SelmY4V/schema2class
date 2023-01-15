@@ -49,11 +49,15 @@
 		},
 		array(def, o, _, items = {}) {
 			const eCls = parse(items, o);
-			const ParsedArr = o.realArray ? function ParsedArr(n = []) {
-				return Object.setPrototypeOf(n.map(eCls), ParsedArr.prototype);
-			} : function ParsedArr(n = []) {
-				this.length = 0;
-				n.forEach(e => this.push(eCls(e)));
+			const ParsedArr = o.realArray ? function ParsedArr(n) {
+				return Object.setPrototypeOf((typeof n === 'object'
+					? n.map(eCls)
+					: Array(ParsedArr.prototype.length)
+				), ParsedArr.prototype);
+			} : function ParsedArr(n) {
+				typeof n === 'object'
+					? (this.length = 0, n.forEach(e => this.push(eCls(e))))
+					: this.length = ParsedArr.prototype.length;
 			};
 			ParsedArr.prototype = [], ParsedArr.prototype.constructor = ParsedArr;
 			def && typeof def.forEach === 'function' && def.forEach(e => ParsedArr.prototype.push(eCls(e)));
