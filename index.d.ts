@@ -1,12 +1,14 @@
-import type { OfSchema } from 'accurtype'
+import type { OfSchema, TypeOf } from 'accurtype'
 type AllPartial<T> = { [I in keyof T]?: AllPartial<T[I]>; }
+type AllRequired<T> = { [I in keyof T]-?: AllRequired<T[I]>; }
 /**
  * JSON Schema Parser
  * @version 2.5.2
+ * @license MIT
  * @link https://github.com/E0SelmY4V/schema2class
  */
 declare const _exports: {
-	<T>(schema?: T, option?: _exports.ParseOption): (n?: AllPartial<OfSchema<T>>) => OfSchema<T>;
+	<T>(schema?: T, option?: _exports.ParseOption): (n?: AllPartial<OfSchema<T>>) => AllRequired<OfSchema<T>>;
 	realArray: boolean;
 	check: boolean;
 	checkKey: boolean;

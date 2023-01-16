@@ -6,10 +6,16 @@ This is also an ES3 edition for IE Browser.
 
 ## Import
 
-- ESM
+- ES Module
 
   ```javascript
   import schema2class from 'schema2class';
+  ```
+
+- Typescript
+
+  ```javascript
+  import schema2class = require('schema2class');
   ```
 
 - CommonJS
